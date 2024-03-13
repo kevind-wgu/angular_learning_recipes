@@ -7,4 +7,10 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'recipies';
+  currentHeader = 'recipies';
+
+  onHeaderChanged(newHeader: string) {
+    this.currentHeader = newHeader;
+  }
+
 }
