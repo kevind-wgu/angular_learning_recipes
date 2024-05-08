@@ -1,32 +1,39 @@
 import { Recipe } from "./recipe.model";
 import { Ingredient } from "../shared/ingredient.model";
-import { Subject } from "rxjs";
+import { Observable, Subject, map, tap } from "rxjs";
+import { Injectable } from "@angular/core";
+import { HttpClient, HttpResponse } from "@angular/common/http";
 
+const URL = 'https://test-angular-1-c3ab9-default-rtdb.firebaseio.com';
+
+@Injectable({providedIn: 'root'})
 export class RecipeService {
   recipiesChanged = new Subject<Recipe[]>();
-  private recipes: Recipe[] = [
-    new Recipe(
-      'French Toast', 
-      'This is a simply delicious French Toast Recipe', 
-      'https://www.allrecipes.com/thmb/VjVrkCVYaalH2JXogJMoFQ_a-zI=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/7016-french-toast-mfs-010-0e1007bf0b47433abe91f2f0c74e5a27.jpg',
-      [
-        new Ingredient('Eggs', 2),
-        new Ingredient('Milk', 2),
-        new Ingredient('Vannila', 1),
-        new Ingredient('Cinnamon', 1),
-        new Ingredient('Bread', 10),
-      ]
-    ),
-    new Recipe(
-      'Big Fat Burger', 
-      'Super Tasty, Fat and Healthy, Burger', 
-      'https://www.washingtonpost.com/wp-apps/imrs.php?src=https://arc-anglerfish-washpost-prod-washpost.s3.amazonaws.com/public/M6HASPARCZHYNN4XTUYT7H6PTE.jpg&w=1440',
-      [
-        new Ingredient('Hamburger', 1),
-        new Ingredient('Bun', 1),
-      ]
-      ),
-   ];
+  private recipes: Recipe[] = [];
+  //   new Recipe(
+  //     'French Toast', 
+  //     'This is a simply delicious French Toast Recipe', 
+  //     'https://www.allrecipes.com/thmb/VjVrkCVYaalH2JXogJMoFQ_a-zI=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/7016-french-toast-mfs-010-0e1007bf0b47433abe91f2f0c74e5a27.jpg',
+  //     [
+  //       new Ingredient('Eggs', 2),
+  //       new Ingredient('Milk', 2),
+  //       new Ingredient('Vannila', 1),
+  //       new Ingredient('Cinnamon', 1),
+  //       new Ingredient('Bread', 10),
+  //     ]
+  //   ),
+  //   new Recipe(
+  //     'Big Fat Burger', 
+  //     'Super Tasty, Fat and Healthy, Burger', 
+  //     'https://www.washingtonpost.com/wp-apps/imrs.php?src=https://arc-anglerfish-washpost-prod-washpost.s3.amazonaws.com/public/M6HASPARCZHYNN4XTUYT7H6PTE.jpg&w=1440',
+  //     [
+  //       new Ingredient('Hamburger', 1),
+  //       new Ingredient('Bun', 1),
+  //     ]
+  //     ),
+  //  ];
+
+   constructor(private http: HttpClient) {}
  
   getRecipes() {
     return this.recipes.slice();
@@ -58,5 +65,29 @@ export class RecipeService {
       this.recipes.splice(index, 1);
       this.recipiesChanged.next(this.recipes);
     }
+  }
+
+  loadRecipiesFromStore() : Observable<Recipe[]> {
+    return this.http.get<Recipe[]>(URL + '/recipies.json')
+      .pipe(
+        map((recipies: Recipe[]) => {
+          return recipies.map(recipe => { 
+            return {
+              ...recipe, 
+              ingredients: recipe.ingredients ?? []
+            }
+          });
+        }),
+        tap((recipies: Recipe[]) => {
+          this.recipes = recipies;
+          this.recipiesChanged.next(this.recipes);
+        }
+      ));
+  }
+
+  writeRecipiesToStore() {
+    this.http.put(URL + '/recipies.json', this.recipes).subscribe(res => {
+      console.log("Stored", res);
+    });
   }
 }

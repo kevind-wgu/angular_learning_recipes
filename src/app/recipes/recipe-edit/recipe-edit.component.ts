@@ -65,24 +65,17 @@ export class RecipeEditComponent implements OnInit, OnDestroy {
   onSubmit() {
     console.log("Submit", this.form);
 
-    const values = this.form.value;
-    const recipe = new Recipe(
-        values.name,
-        values.description,
-        values.imagePath,
-        values.ingredients.map(i => new Ingredient(i.name, i.amount))
-      )
     if (this.recipeEditName) {
-      this.recipeService.updateRecipe(this.recipeEditName, recipe);
+      this.recipeService.updateRecipe(this.recipeEditName, this.form.value);
+      this.router.navigate(['../..', this.form.value.name], {relativeTo: this.route})
     }
     else {
-      this.recipeService.addRecipe(recipe);
+      this.recipeService.addRecipe(this.form.value);
+      this.router.navigate(['..', this.form.value.name], {relativeTo: this.route})
     }
   }
 
   onCancel() {
-    console.log("CANCEL", this.form);
-    this.initForm(null);
     this.router.navigate(['..'], {relativeTo: this.route})
   }
 
@@ -99,8 +92,7 @@ export class RecipeEditComponent implements OnInit, OnDestroy {
 
   onDeleteIngredient(index: number) {
     console.log("Delete Ingredient", index);
-    this.ingredients.controls.splice(index, 1);
-    this.ingredients.updateValueAndValidity();
+    this.ingredients.removeAt(index);
   }
 
 
