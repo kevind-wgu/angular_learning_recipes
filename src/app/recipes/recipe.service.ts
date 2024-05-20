@@ -3,6 +3,7 @@ import { Ingredient } from "../shared/ingredient.model";
 import { Observable, Subject, map, tap } from "rxjs";
 import { Injectable } from "@angular/core";
 import { HttpClient, HttpResponse } from "@angular/common/http";
+import { AuthService } from "../auth/auth.service";
 
 const URL = 'https://test-angular-1-c3ab9-default-rtdb.firebaseio.com';
 
@@ -33,7 +34,7 @@ export class RecipeService {
   //     ),
   //  ];
 
-   constructor(private http: HttpClient) {}
+   constructor(private http: HttpClient, private authService: AuthService) {}
  
   getRecipes() {
     return this.recipes.slice();
