@@ -7,14 +7,14 @@ import { RecipeService } from "./recipe.service";
 @Injectable({
   providedIn: 'root'
 })
-export class RecipiesResolverService implements Resolve<Recipe[]> {
+export class RecipesResolverService implements Resolve<Recipe[]> {
   constructor(private recipeService: RecipeService) {}
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Recipe[] | Observable<Recipe[]> | Promise<Recipe[]> {
-    const recipies = this.recipeService.getRecipes()
-    if (recipies?.length > 0) {
-      return recipies;
+    const recipes = this.recipeService.getRecipes()
+    if (recipes?.length > 0) {
+      return recipes;
     }
-    return this.recipeService.loadRecipiesFromStore();
+    return this.recipeService.loadRecipesFromStore();
   }
 }

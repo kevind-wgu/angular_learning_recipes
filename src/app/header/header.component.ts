@@ -12,7 +12,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   isAuthenticated = false;
   private userSub: Subscription;
 
-  constructor(private recipiesService: RecipeService, private authService: AuthService) {}
+  constructor(private recipesService: RecipeService, private authService: AuthService) {}
 
   ngOnInit(): void {
     this.userSub = this.authService.user.subscribe(user => {
@@ -29,10 +29,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   onFetchData() {
-    this.recipiesService.loadRecipiesFromStore().subscribe();
+    this.recipesService.loadRecipesFromStore().subscribe();
   }
   
   onSaveData() {
-    this.recipiesService.writeRecipiesToStore();
+    this.recipesService.writeRecipesToStore();
   }
 }

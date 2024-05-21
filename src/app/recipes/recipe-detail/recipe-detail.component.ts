@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { Recipe } from "../recipe.model";
-import { ShoppingListService } from "src/app/shopping/shipping-list.service";
+import { ShoppingListService } from "src/app/shopping/shopping-list.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import { RecipeService } from "../recipe.service";
 
@@ -30,6 +30,6 @@ export class RecipeDetailComponent implements OnInit {
 
   deleteRecipe(name: String) {
     this.recipeService.deleteRecipe(name);
-    this.router.navigate(['/recipies'])
+    this.router.navigate(['/recipes'])
   }
 }

@@ -4,12 +4,13 @@ import { Observable, Subject, map, tap } from "rxjs";
 import { Injectable } from "@angular/core";
 import { HttpClient, HttpResponse } from "@angular/common/http";
 import { AuthService } from "../auth/auth.service";
+import { environment } from "../../environments/environment";
 
-const URL = 'https://test-angular-1-c3ab9-default-rtdb.firebaseio.com';
+const URL = environment.firebaseUrl;
 
 @Injectable({providedIn: 'root'})
 export class RecipeService {
-  recipiesChanged = new Subject<Recipe[]>();
+  recipesChanged = new Subject<Recipe[]>();
   private recipes: Recipe[] = [];
   //   new Recipe(
   //     'French Toast', 
@@ -46,7 +47,7 @@ export class RecipeService {
 
   addRecipe(recipe: Recipe) {
     this.recipes.push(recipe);
-    this.recipiesChanged.next(this.recipes);
+    this.recipesChanged.next(this.recipes);
   }
 
   updateRecipe(name: String, recipe: Recipe) {
@@ -57,37 +58,38 @@ export class RecipeService {
     else {
       this.recipes.push(recipe);
     }
-    this.recipiesChanged.next(this.recipes);
+    this.recipesChanged.next(this.recipes);
   }
 
   deleteRecipe(name: String) {
     const index = this.recipes.findIndex((r) => r.name === name);
     if (index >= 0) {
       this.recipes.splice(index, 1);
-      this.recipiesChanged.next(this.recipes);
+      this.recipesChanged.next(this.recipes);
     }
   }
 
-  loadRecipiesFromStore() : Observable<Recipe[]> {
-    return this.http.get<Recipe[]>(URL + '/recipies.json')
+  loadRecipesFromStore() : Observable<Recipe[]> {
+    return this.http.get<Recipe[]>(URL + '/recipes.json')
       .pipe(
-        map((recipies: Recipe[]) => {
-          return recipies.map(recipe => { 
+        map((recipes: Recipe[]) => {
+          console.log("RECIPES", recipes);
+          return recipes.map(recipe => { 
             return {
               ...recipe, 
               ingredients: recipe.ingredients ?? []
             }
           });
         }),
-        tap((recipies: Recipe[]) => {
-          this.recipes = recipies;
-          this.recipiesChanged.next(this.recipes);
+        tap((recipes: Recipe[]) => {
+          this.recipes = recipes;
+          this.recipesChanged.next(this.recipes);
         }
       ));
   }
 
-  writeRecipiesToStore() {
-    this.http.put(URL + '/recipies.json', this.recipes).subscribe(res => {
+  writeRecipesToStore() {
+    this.http.put(URL + '/recipes.json', this.recipes).subscribe(res => {
       console.log("Stored", res);
     });
   }

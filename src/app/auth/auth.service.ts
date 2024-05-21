@@ -3,6 +3,9 @@ import { Injectable, OnInit } from "@angular/core";
 import { BehaviorSubject, Observable, Subject, catchError, tap, throwError } from "rxjs";
 import { User } from "./user.model";
 import { Router } from "@angular/router";
+import { environment } from '../../environments/environment';
+
+const URL = environment.googleApiUrl;
 
 export interface AuthResponseData {
   kind: string;
@@ -25,7 +28,7 @@ export class AuthService {
 
   signup(email: string, password: string) : Observable<AuthResponseData> {
     return this.http.post<AuthResponseData>(
-      'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyCuwEsC7wFNBMa32pFzVQPRgugBDUmBNXk',
+      URL + '/v1/accounts:signUp?key=' + environment.firebaseAPIKey,
       {email: email, password: password, returnSecureToken: true,}
     )
     .pipe(catchError(this.handleError), tap((resData) => this.handleAuthentication(resData)));
@@ -33,7 +36,7 @@ export class AuthService {
 
   login(email: string, password: string) : Observable<AuthResponseData> {
     return this.http.post<AuthResponseData>(
-      'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyCuwEsC7wFNBMa32pFzVQPRgugBDUmBNXk',
+      URL + '/v1/accounts:signInWithPassword?key=' + environment.firebaseAPIKey,
       {email: email, password: password, returnSecureToken: true,}
     )
     .pipe(catchError(this.handleError), tap((resData) => this.handleAuthentication(resData)));
