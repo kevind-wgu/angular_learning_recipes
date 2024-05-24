@@ -3,7 +3,6 @@ import { Ingredient } from "../shared/ingredient.model";
 import { Observable, Subject, map, tap } from "rxjs";
 import { Injectable } from "@angular/core";
 import { HttpClient, HttpResponse } from "@angular/common/http";
-import { AuthService } from "../auth/auth.service";
 import { environment } from "../../environments/environment";
 
 const URL = environment.firebaseUrl;
@@ -35,7 +34,7 @@ export class RecipeService {
   //     ),
   //  ];
 
-   constructor(private http: HttpClient, private authService: AuthService) {}
+   constructor(private http: HttpClient) {}
  
   getRecipes() {
     return this.recipes.slice();

@@ -1,7 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { RecipeService } from '../recipes/recipe.service';
-import { AuthService } from '../auth/auth.service';
+import * as AuthStore from '../auth/auth.store';
 import { Subscription } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { AppState } from '../store/app.store';
 
 @Component({
   selector: 'app-header',
@@ -12,11 +14,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
   isAuthenticated = false;
   private userSub: Subscription;
 
-  constructor(private recipesService: RecipeService, private authService: AuthService) {}
+  constructor(private recipesService: RecipeService, private store: Store<AppState>) {}
 
   ngOnInit(): void {
-    this.userSub = this.authService.user.subscribe(user => {
-        this.isAuthenticated = !!user;
+    this.userSub = this.store.select('auth').subscribe(auth => {
+        this.isAuthenticated = !!auth.user;
     });
   }
 
@@ -25,7 +27,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   onLogout() {
-    this.authService.logout();
+    this.store.dispatch(AuthStore.logout());
   }
 
   onFetchData() {
