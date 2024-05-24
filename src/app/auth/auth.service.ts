@@ -48,7 +48,7 @@ export class AuthService {
     // const expiresInMs = 10* 1000;
     const expireDate = new Date(new Date().getTime() + expiresInMs);
     const user = new User(resData.email, resData.localId, resData.idToken, expireDate);
-    this.store.dispatch(AuthStore.login({value: user}));
+    this.store.dispatch(AuthStore.login({value: user, redirect: true}));
   }
 
   private handleError(errorRes: HttpErrorResponse) : Observable<AuthResponseData> {

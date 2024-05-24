@@ -1,11 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Recipe } from '../recipe.model';
 import { ActivatedRoute, Router } from '@angular/router';
-import { RecipeService } from '../recipe.service';
 import { Ingredient } from 'src/app/shared/ingredient.model';
-import { AbstractControl, FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
-import { Subscription } from 'rxjs';
-import { relative } from 'path';
+import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
+import { map, Subscription, switchMap } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { AppState } from 'src/app/store/app.store';
+import * as RecipesStore from '../recipes.store';
 
 @Component({
   selector: 'app-recipe-edit',
@@ -21,16 +22,25 @@ export class RecipeEditComponent implements OnInit, OnDestroy {
 
   constructor(private route: ActivatedRoute, 
     private router: Router,
-    private recipeService: RecipeService) 
-  { }
+    private store: Store<AppState>,
+  ) { }
 
   ngOnInit(): void {
     this.initForm(null);
 
-    this.subscription = this.route.params.subscribe((params) => {
-      this.recipeEditName = params['name'];
-      if (this.recipeEditName) {
-        const recipe = this.recipeService.getRecipe(this.recipeEditName);
+    this.subscription = this.route.params.pipe(
+      switchMap((params) => {
+        this.recipeEditName = params['name'];
+        return this.store.select('recipes');
+      }),
+      map((recipeStore) => {
+        if (this.recipeEditName) {
+            return recipeStore.recipes.find((r) => r.name === this.recipeEditName);
+        }
+        return null;
+      })
+    ).subscribe((recipe) => {
+      if (recipe) {
         this.initForm(recipe);
         this.recipeEditMode = true;
       }
@@ -66,12 +76,10 @@ export class RecipeEditComponent implements OnInit, OnDestroy {
     console.log("Submit", this.form);
 
     if (this.recipeEditName) {
-      this.recipeService.updateRecipe(this.recipeEditName, this.form.value);
-      this.router.navigate(['../..', this.form.value.name], {relativeTo: this.route})
+      this.store.dispatch(RecipesStore.updateRecipe({name: this.recipeEditName, value: this.form.value}));
     }
     else {
-      this.recipeService.addRecipe(this.form.value);
-      this.router.navigate(['..', this.form.value.name], {relativeTo: this.route})
+      this.store.dispatch(RecipesStore.addRecipe({value: this.form.value}));
     }
   }
 

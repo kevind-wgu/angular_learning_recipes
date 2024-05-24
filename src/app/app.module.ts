@@ -11,6 +11,7 @@ import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 import { appReducer } from './store/app.store';
 import { AuthEffects } from './auth/auth.store';
+import { RecipesEffects } from './recipes/recipes.store';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,7 @@ import { AuthEffects } from './auth/auth.store';
     SharedModule,
     CoreModule,
     StoreModule.forRoot(appReducer, {}),
-    EffectsModule.forRoot([AuthEffects]),
+    EffectsModule.forRoot([AuthEffects, RecipesEffects]),
   ],
   providers: [],
   bootstrap: [AppComponent]

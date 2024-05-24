@@ -17,7 +17,7 @@ const INITIAL_STATE: State = {
 };
 
 export const login = createAction('[Auth] Login', 
-  props<{value: User}>(),
+  props<{value: User, redirect: boolean}>(),
 );
 
 export const logout = createAction('[Auth] Logout');
@@ -51,6 +51,19 @@ export class AuthEffects {
     {dispatch: false}
   );
 
+  authRedirect = createEffect(
+    () => this.actions$.pipe(
+      ofType(login),
+      tap((action)=> {
+        if (action.redirect) {
+          console.log("authLogin redirect effect");
+          this.router.navigate(['/recipes']);
+        }
+      }),
+    ),
+    {dispatch: false}
+  );
+
   authLogout = createEffect(
     () => this.actions$.pipe(
       ofType(logout),
@@ -73,7 +86,7 @@ export class AuthEffects {
           const loadedUser = new User(userData.email, userData.id, userData._token, expDate);
           if (loadedUser.token) {
             console.log("AUTO LOGIN A");
-            return of(login({value: loadedUser}));
+            return of(login({value: loadedUser, redirect: false}));
           }
         }
         console.log("AUTO LOGIN B");

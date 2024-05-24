@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  firebaseAPIKey: 'AIzaSyCuwEsC7wFNBMa32pFzVQPRgugBDUmBNXk',
+  firebaseAPIKey: 'reset',
   googleApiUrl: 'https://identitytoolkit.googleapis.com',
   firebaseUrl: 'https://test-angular-1-c3ab9-default-rtdb.firebaseio.com'
 };
